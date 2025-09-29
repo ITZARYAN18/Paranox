@@ -35,12 +35,14 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.all(24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              SizedBox(height: 40),
               // Logo/Title
               Icon(
                 Icons.fitness_center,
@@ -116,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: Text('Don\'t have an account? Sign up'),
               ),
+              SizedBox(height: 40),
             ],
           ),
         ),

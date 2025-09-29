@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class LeaderboardPage extends StatelessWidget {
-  // Using final for immutable properties is a good practice.
   final List<Map<String, dynamic>> _leaderboardData = [
     {'name': 'Alex Johnson', 'points': 1250, 'rank': 1, 'streak': 15},
     {'name': 'Sarah Chen', 'points': 1180, 'rank': 2, 'streak': 12},
@@ -24,8 +23,7 @@ class LeaderboardPage extends StatelessWidget {
         children: [
           // Top 3 Podium
           Container(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 8.0), // Added padding for better spacing
-            height: 200, // Slightly increased height for better visual balance
+            height: 220,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [Colors.orange, Colors.orangeAccent],
@@ -33,23 +31,24 @@ class LeaderboardPage extends StatelessWidget {
                 end: Alignment.bottomCenter,
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // --- CHANGED HEIGHTS HERE ---
-                _buildPodiumPosition(_leaderboardData[1], 2, 80), // 2nd place
-                _buildPodiumPosition(_leaderboardData[0], 1, 110), // 1st place
-                _buildPodiumPosition(_leaderboardData[2], 3, 60), // 3rd place
-              ],
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _buildPodiumPosition(_leaderboardData[1], 2, 80),
+                  _buildPodiumPosition(_leaderboardData[0], 1, 100),
+                  _buildPodiumPosition(_leaderboardData[2], 3, 60),
+                ],
+              ),
             ),
           ),
 
           // Rest of leaderboard
           Expanded(
             child: ListView.builder(
-              // Changed padding to only be horizontal to avoid extra space at the top
-              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: EdgeInsets.all(16),
               itemCount: _leaderboardData.length - 3,
               itemBuilder: (context, index) {
                 final user = _leaderboardData[index + 3];
@@ -63,74 +62,55 @@ class LeaderboardPage extends StatelessWidget {
   }
 
   Widget _buildPodiumPosition(Map<String, dynamic> user, int position, double height) {
-    Color medalColor = position == 1 ? Colors.amber[600]! : position == 2 ? Colors.grey[400]! : Color(0xFFCD7F32);
+    Color medalColor = position == 1 ? Colors.amber : position == 2 ? Colors.grey[300]! : Colors.brown[300]!;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        CircleAvatar(
-          radius: 22, // Slightly larger avatar
-          backgroundColor: Colors.white,
-          child: Text(
-            user['name'][0],
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.orange),
-          ),
-        ),
-        SizedBox(height: 8),
-        Text(
-          user['name'].split(' ')[0],
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        Text(
-          '${user['points']} pts',
-          style: TextStyle(color: Colors.white70, fontSize: 12),
-        ),
-        SizedBox(height: 8),
-        Container(
-          height: height,
-          width: 60, // A bit wider for better proportions
-          decoration: BoxDecoration(
-            // Use a simple gradient instead of a solid color
-            gradient: LinearGradient(
-              colors: [
-                Color.lerp(medalColor, Colors.white, 0.1)!, // Lighter top
-                medalColor,                                // Main color
-                Color.lerp(medalColor, Colors.black, 0.1)!, // Darker bottom
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                spreadRadius: 1,
-                blurRadius: 3,
-                offset: Offset(0, -2),
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: Colors.white,
+              child: Text(
+                user['name'][0],
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.orange),
               ),
-            ],
-          ),
-
-
-          child: Center(
-            child: Text(
-              '$position',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                shadows: [
-                  Shadow(
-                    blurRadius: 2.0,
-                    color: Colors.black.withOpacity(0.5),
-                    offset: Offset(1.0, 1.0),
+            ),
+            SizedBox(height: 3),
+            Text(
+              user['name'].split(' ')[0],
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              '${user['points']}',
+              style: TextStyle(color: Colors.white, fontSize: 9),
+            ),
+            SizedBox(height: 3),
+            Container(
+              height: height,
+              decoration: BoxDecoration(
+                color: medalColor,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+              ),
+              child: Center(
+                child: Text(
+                  '$position',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -138,17 +118,11 @@ class LeaderboardPage extends StatelessWidget {
     bool isCurrentUser = user['name'] == 'You';
 
     return Card(
-      elevation: isCurrentUser ? 4 : 1,
-      margin: EdgeInsets.only(bottom: 10),
-      color: isCurrentUser ? Colors.orange.withOpacity(0.1) : Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: isCurrentUser ? BorderSide(color: Colors.orange, width: 1.5) : BorderSide.none,
-      ),
+      elevation: isCurrentUser ? 4 : 2,
+      margin: EdgeInsets.only(bottom: 8),
+      color: isCurrentUser ? Colors.blue[50] : null,
       child: ListTile(
-        contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         leading: CircleAvatar(
-          radius: 20,
           backgroundColor: Colors.orange,
           child: Text(
             '${user['rank']}',
@@ -159,17 +133,19 @@ class LeaderboardPage extends StatelessWidget {
           user['name'],
           style: TextStyle(
             fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.normal,
-            color: Colors.black87,
           ),
         ),
-        subtitle: Text('${user['streak']} day streak 🔥'),
-        trailing: Text(
-          '${user['points']} pts',
-          style: TextStyle(
-            fontSize: 16, // --- CHANGED FONT SIZE HERE ---
-            fontWeight: FontWeight.bold,
-            color: Colors.orange[800],
-          ),
+        subtitle: Text('${user['streak']} day streak'),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              '${user['points']}',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Text('points', style: TextStyle(fontSize: 10, color: Colors.grey)),
+          ],
         ),
       ),
     );

@@ -11,6 +11,8 @@ class GymMapPage extends StatefulWidget {
 }
 
 class _GymMapPageState extends State<GymMapPage> {
+  final MapController _mapController = MapController();
+
   // MODIFIED: No GoogleMapController needed.
   // We use MapController for programmatic control, but it's not needed for this example.
 
@@ -157,12 +159,12 @@ class _GymMapPageState extends State<GymMapPage> {
             ),
           ),
           Expanded(
-            flex: 2,
+            flex: 3,
             // MODIFIED: This method now builds a FlutterMap
             child: _buildMapWidget(),
           ),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: ListView.builder(
               padding: EdgeInsets.all(16),
               itemCount: _gymData.length,
@@ -180,6 +182,7 @@ class _GymMapPageState extends State<GymMapPage> {
   // MODIFIED: This entire method is replaced to use FlutterMap
   Widget _buildMapWidget() {
     return FlutterMap(
+      mapController: _mapController,
       options: MapOptions(
         initialCenter: _center,
         initialZoom: 13.0,
@@ -214,7 +217,73 @@ class _GymMapPageState extends State<GymMapPage> {
     return Center(/* ... your existing error widget code ... */);
   }
 
+
+    // Replace your _buildGymListItem with this
   Widget _buildGymListItem(Map<String, dynamic> gym) {
-    return Card(/* ... your existing list item code ... */);
+    return InkWell(
+      onTap: () {
+        // ✅ Recenters the map on the selected gym
+        _mapController.move(
+          LatLng(gym['lat'], gym['lng']),
+          16.0, // zoom in a bit closer
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Centered map on ${gym['name']}")),
+        );
+      },
+      child: Card(
+        margin: EdgeInsets.symmetric(vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 3,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.fitness_center, size: 40, color: Colors.green),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(gym['name'],
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 4),
+                    Text('Distance: ${gym['distance']}',
+                        style: TextStyle(color: Colors.grey[600])),
+                    SizedBox(height: 2),
+                    Text('⭐ ${gym['rating']}',
+                        style: TextStyle(color: Colors.orange[800])),
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.directions, color: Colors.blue),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Getting directions to ${gym['name']}...")),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.call, color: Colors.green),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Calling ${gym['name']}...")),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
+
 }

@@ -78,7 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     SizedBox(height: 16),
                     Text(
-                      'John Doe',
+                      'Bhawishya',
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     Text(
