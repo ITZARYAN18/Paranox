@@ -51,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 20),
               Text(
-                'Fitness Tracker',
+                'FitCore',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
