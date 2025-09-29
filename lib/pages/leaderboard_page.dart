@@ -110,6 +110,8 @@ class LeaderboardPage extends StatelessWidget {
               ),
             ],
           ),
+
+
           child: Center(
             child: Text(
               '$position',
