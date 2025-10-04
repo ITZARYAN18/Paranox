@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kevin_11/model/jump.dart';
+import 'package:kevin_11/model/situp.dart';
 
 class DashboardPage extends StatelessWidget {
   @override
@@ -14,7 +16,7 @@ class DashboardPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome Card
+            // Welcome Card (Unchanged)
             Card(
               elevation: 4,
               child: Padding(
@@ -42,7 +44,7 @@ class DashboardPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Stats Grid
+            // Stats Grid (Unchanged)
             Text('Today\'s Stats', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 12),
             GridView.count(
@@ -61,17 +63,11 @@ class DashboardPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            // Quick Actions
-            Text('Quick Actions', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildActionButton('Start Workout', Icons.play_arrow, Colors.green),
-                _buildActionButton('Log Food', Icons.restaurant, Colors.orange),
-                _buildActionButton('Track Water', Icons.water_drop, Colors.blue),
-              ],
-            ),
+            // --- NEW WORKOUT SECTION ---
+            // This replaces the old "Quick Actions" row.
+            _buildWorkoutSection(context),
+            // --- END OF NEW SECTION ---
+
             SizedBox(height: 20),
           ],
         ),
@@ -79,6 +75,67 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
+  // --- NEW HELPER WIDGET for the workout list ---
+  Widget _buildWorkoutSection(BuildContext context) {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8), // Less bottom padding
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Start a Workout',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 12),
+
+            // Sit-Up Challenge
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.fitness_center, color: Colors.green),
+              title: Text('Sit-Up Challenge'),
+              trailing: ElevatedButton(
+                onPressed: () {
+                 Navigator.push(context, MaterialPageRoute(builder: (context)=>SitupScreen()));
+                },
+                child: Text('Start'),
+              ),
+            ),
+            Divider(),
+
+            // Vertical Jump Test
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.arrow_upward, color: Colors.orange),
+              title: Text('Vertical Jump Test'),
+              trailing: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>JumpScreen()));
+                },
+                child: Text('Start'),
+              ),
+            ),
+            Divider(),
+
+            // Coming Soon item
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.accessibility_new, color: Colors.grey),
+              title: Text('Push-Up Counter', style: TextStyle(color: Colors.grey)),
+              trailing: Chip(
+                label: Text('Coming Soon', style: TextStyle(fontSize: 10)),
+                backgroundColor: Colors.grey.shade800,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  // Unchanged helper widget for stats
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Card(
       elevation: 4,
@@ -98,6 +155,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
+  // NOTE: This helper widget is no longer used, but I've left it here in case you need it elsewhere.
   Widget _buildActionButton(String label, IconData icon, Color color) {
     return Column(
       children: [
