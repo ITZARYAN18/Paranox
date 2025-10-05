@@ -17,21 +17,21 @@ class JumpScreen extends StatefulWidget {
 }
 
 class _JumpScreenState extends State<JumpScreen> {
-  // --- STATE VARIABLES ---
+ 
   bool _isLoading = false;
   Map<String, dynamic>? _apiResponse;
   XFile? _pickedFile;
 
-  // --- NEW State Variables for Interactive Feedback ---
+  
   String? _detailedFeedback;
   bool _isFetchingFeedback = false;
 
-  // Video player controllers
+ 
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
 
-  // --- 🚨 IMPORTANT: CHANGE THIS TO YOUR COMPUTER'S IP ADDRESS ---
-  final String _ipAddress = "10.223.35.72"; // <-- REPLACE WITH YOUR IP
+ 
+  final String _ipAddress = "10.223.35.72"; 
   final String _port = "8000";
 
   @override
@@ -41,9 +41,9 @@ class _JumpScreenState extends State<JumpScreen> {
     super.dispose();
   }
 
-  // --- LOGIC TO UPLOAD THE VIDEO ---
+ 
   Future<void> _uploadVideo(XFile videoFile) async {
-    // Clean up old controllers and reset state
+    
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
     _videoPlayerController = null;
@@ -52,7 +52,7 @@ class _JumpScreenState extends State<JumpScreen> {
     setState(() {
       _isLoading = true;
       _apiResponse = null;
-      _detailedFeedback = null; // Reset feedback on new upload
+      _detailedFeedback = null;
     });
 
     try {
@@ -86,7 +86,7 @@ class _JumpScreenState extends State<JumpScreen> {
     }
   }
 
-  // --- NEW: Function to get detailed feedback ---
+ 
   Future<void> _getDetailedFeedback() async {
     setState(() {
       _isFetchingFeedback = true;
@@ -97,7 +97,7 @@ class _JumpScreenState extends State<JumpScreen> {
       final response = await http.post(
         Uri.parse(feedbackUrl),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(_apiResponse), // Send the stats from the first API call
+        body: jsonEncode(_apiResponse), 
       );
 
       if (!mounted) return;
@@ -173,7 +173,7 @@ class _JumpScreenState extends State<JumpScreen> {
     );
   }
 
-  // --- UPDATED: Results widget with the new interactive feedback section ---
+
   Widget _buildResultsWidget() {
     return Column(
       children: [
@@ -194,7 +194,7 @@ class _JumpScreenState extends State<JumpScreen> {
         ),
         const SizedBox(height: 20),
 
-        // --- Interactive Feedback Section ---
+      
         if (_detailedFeedback != null)
           Card(
             color: Colors.teal.withOpacity(0.3),
@@ -215,7 +215,7 @@ class _JumpScreenState extends State<JumpScreen> {
 
         const SizedBox(height: 20),
 
-        // Video player
+       
         if (_chewieController != null && _chewieController!.videoPlayerController.value.isInitialized)
           AspectRatio(
             aspectRatio: _chewieController!.videoPlayerController.value.aspectRatio,
