@@ -125,7 +125,7 @@ class DashboardPage extends StatelessWidget {
               title: Text('Push-Up Counter', style: TextStyle(color: Colors.grey)),
               trailing: Chip(
                 label: Text('Coming Soon', style: TextStyle(fontSize: 10)),
-                backgroundColor: Colors.grey.shade800,
+                backgroundColor: Colors.black,
               ),
             ),
           ],

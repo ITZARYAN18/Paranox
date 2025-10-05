@@ -1,12 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
-
-
 
 
 
@@ -25,12 +22,17 @@ class _JumpScreenState extends State<JumpScreen> {
   Map<String, dynamic>? _apiResponse;
   XFile? _pickedFile;
 
+  // --- NEW State Variables for Interactive Feedback ---
+  String? _detailedFeedback;
+  bool _isFetchingFeedback = false;
+
   // Video player controllers
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
 
-  // --- IMPORTANT: CHANGE THIS TO YOUR COMPUTER'S IP ADDRESS ---
-  final String _apiUrl = "http://10.223.35.72:8000/predict_jump";
+  // --- 🚨 IMPORTANT: CHANGE THIS TO YOUR COMPUTER'S IP ADDRESS ---
+  final String _ipAddress = "10.223.35.72"; // <-- REPLACE WITH YOUR IP
+  final String _port = "8000";
 
   @override
   void dispose() {
@@ -41,25 +43,22 @@ class _JumpScreenState extends State<JumpScreen> {
 
   // --- LOGIC TO UPLOAD THE VIDEO ---
   Future<void> _uploadVideo(XFile videoFile) async {
-    // --- THIS IS THE CORRECTED PART ---
-    // Step 1: Dispose and nullify old controllers BEFORE rebuilding the UI.
+    // Clean up old controllers and reset state
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
     _videoPlayerController = null;
     _chewieController = null;
 
-    // Step 2: Now, safely update the UI to show the loading state.
     setState(() {
       _isLoading = true;
-      _apiResponse = null; // Clear previous results
+      _apiResponse = null;
+      _detailedFeedback = null; // Reset feedback on new upload
     });
-    // --- END OF CORRECTION ---
 
     try {
-      var request = http.MultipartRequest("POST", Uri.parse(_apiUrl));
-      request.files.add(
-        await http.MultipartFile.fromPath('file', videoFile.path),
-      );
+      final uploadUrl = "http://$_ipAddress:$_port/predict_jump";
+      var request = http.MultipartRequest("POST", Uri.parse(uploadUrl));
+      request.files.add(await http.MultipartFile.fromPath('file', videoFile.path));
       var response = await request.send();
 
       if (!mounted) return;
@@ -72,17 +71,11 @@ class _JumpScreenState extends State<JumpScreen> {
         });
         _initializeVideoPlayer(decodedResponse['processed_video_url']);
       } else {
-        print("API call failed with status code: ${response.statusCode}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: Failed to upload video.')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: Failed to upload video.')));
       }
     } catch (e) {
-      print("An error occurred: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('An error occurred: $e')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
       }
     } finally {
       if (mounted) {
@@ -93,7 +86,41 @@ class _JumpScreenState extends State<JumpScreen> {
     }
   }
 
-  // --- LOGIC TO INITIALIZE THE VIDEO PLAYER ---
+  // --- NEW: Function to get detailed feedback ---
+  Future<void> _getDetailedFeedback() async {
+    setState(() {
+      _isFetchingFeedback = true;
+    });
+
+    try {
+      final feedbackUrl = "http://$_ipAddress:$_port/generate_feedback";
+      final response = await http.post(
+        Uri.parse(feedbackUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(_apiResponse), // Send the stats from the first API call
+      );
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200) {
+        final decodedResponse = jsonDecode(response.body);
+        setState(() {
+          _detailedFeedback = decodedResponse['feedback'];
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not fetch feedback.')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFetchingFeedback = false;
+        });
+      }
+    }
+  }
+
   void _initializeVideoPlayer(String videoUrl) {
     _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
       ..initialize().then((_) {
@@ -107,13 +134,10 @@ class _JumpScreenState extends State<JumpScreen> {
       });
   }
 
-  // --- UI WIDGETS ---
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Fitness AI Trainer"),
-      ),
+      appBar: AppBar(title: const Text("Fitness AI Trainer")),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -121,9 +145,7 @@ class _JumpScreenState extends State<JumpScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ElevatedButton.icon(
-                onPressed: _isLoading
-                    ? null
-                    : () async {
+                onPressed: _isLoading ? null : () async {
                   final picker = ImagePicker();
                   _pickedFile = await picker.pickVideo(source: ImageSource.gallery);
                   if (_pickedFile != null) {
@@ -151,13 +173,11 @@ class _JumpScreenState extends State<JumpScreen> {
     );
   }
 
+  // --- UPDATED: Results widget with the new interactive feedback section ---
   Widget _buildResultsWidget() {
     return Column(
       children: [
-        Text(
-          "Results",
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        Text("Results", style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: 10),
         Card(
           child: Padding(
@@ -167,24 +187,42 @@ class _JumpScreenState extends State<JumpScreen> {
               children: [
                 Text("Rep Count: ${_apiResponse!['count']}", style: const TextStyle(fontSize: 18)),
                 const SizedBox(height: 8),
-                Text("Stage: ${_apiResponse!['stage'] ?? 'N/A'}", style: const TextStyle(fontSize: 18)),
-                const SizedBox(height: 8),
-                Text("Feedback: ${_apiResponse!['feedback'] ?? 'N/A'}", style: const TextStyle(fontSize: 18)),
+                Text("Final Stage: ${_apiResponse!['stage'] ?? 'N/A'}", style: const TextStyle(fontSize: 18)),
               ],
             ),
           ),
         ),
         const SizedBox(height: 20),
+
+        // --- Interactive Feedback Section ---
+        if (_detailedFeedback != null)
+          Card(
+            color: Colors.teal.withOpacity(0.3),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(_detailedFeedback!, style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+            ),
+          )
+        else if (_isFetchingFeedback)
+          const Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator())
+        else
+          ElevatedButton.icon(
+            onPressed: _getDetailedFeedback,
+            icon: const Icon(Icons.auto_awesome),
+            label: const Text("Get Detailed Feedback"),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurpleAccent),
+          ),
+
+        const SizedBox(height: 20),
+
+        // Video player
         if (_chewieController != null && _chewieController!.videoPlayerController.value.isInitialized)
           AspectRatio(
             aspectRatio: _chewieController!.videoPlayerController.value.aspectRatio,
             child: Chewie(controller: _chewieController!),
           )
         else
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.0),
-            child: CircularProgressIndicator(),
-          ),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 20.0), child: CircularProgressIndicator()),
       ],
     );
   }
