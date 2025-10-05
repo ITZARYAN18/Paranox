@@ -17,10 +17,10 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    // Simulate login delay
+    
     await Future.delayed(Duration(seconds: 2));
 
-    // Save login state
+   
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', true);
     await prefs.setString('userEmail', _emailController.text);
@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 40),
 
-              // Email Field
+             
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 16),
 
-              // Password Field
+             
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 24),
 
-              // Login Button
+             
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 16),
 
-              // Sign up link
+             
               TextButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
