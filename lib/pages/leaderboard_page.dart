@@ -21,7 +21,7 @@ class LeaderboardPage extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Top 3 Podium
+         
           Container(
             height: 220,
             decoration: BoxDecoration(
@@ -45,7 +45,7 @@ class LeaderboardPage extends StatelessWidget {
             ),
           ),
 
-          // Rest of leaderboard
+         
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.all(16),
