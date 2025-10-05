@@ -18,5 +18,5 @@ Our app uses your phone's sensors to automatically count your **sit-ups** and **
 
 Check out this video to see FitTrack AI in action:
 
-[![FitTrack AI Demo](https://youtube.com/shorts/whLpmXFvS6I?si=KYJY5prh2_m2gIMm)
+[![FitTrack AI Demo][(https://img.youtube.com/vi/YOUR_YOUTUBE_VIDEO_ID/0.jpg)](https://youtube.com/shorts/whLpmXFvS6I?si=KYJY5prh2_m2gIMm).
 
