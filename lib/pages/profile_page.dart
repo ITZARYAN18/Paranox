@@ -64,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            // Profile Header
+           
             Card(
               elevation: 4,
               child: Padding(
@@ -96,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             SizedBox(height: 20),
 
-            // Stats Overview
+           
             Card(
               elevation: 4,
               child: Padding(
@@ -156,7 +156,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             SizedBox(height: 20),
 
-            // Body Measurements
+           
             Card(
               elevation: 4,
               child: Padding(
@@ -189,7 +189,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             SizedBox(height: 20),
 
-            // Settings Options
+          
             Card(
               elevation: 4,
               child: Column(
@@ -228,7 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             SizedBox(height: 20),
 
-            // Logout Button
+           
             Padding(
               padding: EdgeInsets.only(bottom: 20),
               child: SizedBox(
