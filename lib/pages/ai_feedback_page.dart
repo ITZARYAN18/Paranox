@@ -35,10 +35,10 @@ class _AIFeedbackPageState extends State<AIFeedbackPage> {
       _isLoading = true;
     });
 
-    // Simulate AI response delay
+   
     await Future.delayed(Duration(seconds: 2));
 
-    // Generate AI response based on message
+   
     String aiResponse = _generateAIResponse(userMessage);
 
     setState(() {
