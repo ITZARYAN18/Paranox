@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// MODIFIED: Import the new packages
+
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
@@ -13,18 +13,15 @@ class GymMapPage extends StatefulWidget {
 class _GymMapPageState extends State<GymMapPage> {
   final MapController _mapController = MapController();
 
-  // MODIFIED: No GoogleMapController needed.
-  // We use MapController for programmatic control, but it's not needed for this example.
+ 
+  LatLng _center = LatLng(28.4595, 77.0266); 
 
-  // MODIFIED: Use LatLng from the 'latlong2' package
-  LatLng _center = LatLng(28.4595, 77.0266); // Gurugram coordinates
-
-  // MODIFIED: flutter_map uses a List of Markers, not a Set.
+ 
   List<Marker> _markers = [];
   bool _isLoading = true;
   String? _error;
 
-  // Dummy gym data (no changes here)
+ 
   final List<Map<String, dynamic>> _gymData = [
     {'name': 'PowerHouse Gym', 'lat': 28.4595, 'lng': 77.0266, 'rating': 4.5, 'distance': '0.5 km'},
     {'name': 'Gold\'s Gym', 'lat': 28.4620, 'lng': 77.0300, 'rating': 4.2, 'distance': '1.2 km'},
@@ -39,12 +36,12 @@ class _GymMapPageState extends State<GymMapPage> {
     _initializeMap();
   }
 
-  // The logic for initialization, permissions, and location fetching remains mostly the same.
+ 
   Future<void> _initializeMap() async {
     try {
       await _requestLocationPermission();
       await _getCurrentLocation();
-      _createMarkers(); // Create markers after getting location
+      _createMarkers(); 
       setState(() {
         _isLoading = false;
       });
@@ -83,19 +80,19 @@ class _GymMapPageState extends State<GymMapPage> {
         desiredAccuracy: LocationAccuracy.high,
       );
       setState(() {
-        // MODIFIED: Use the LatLng from 'latlong2'
+       
         _center = LatLng(position.latitude, position.longitude);
       });
     } catch (e) {
       print('Error getting location: $e');
-      // Keep default location if error
+     
     }
   }
 
   void _createMarkers() {
-    // Convert gym data to Marker objects
+   
     final gymMarkers = _gymData.map((gym) {
-      // MODIFIED: This is a flutter_map Marker
+      
       return Marker(
         point: LatLng(gym['lat'], gym['lng']),
         width: 80,
@@ -118,7 +115,7 @@ class _GymMapPageState extends State<GymMapPage> {
       );
     }).toList();
 
-    // Add a special marker for the user's current location
+   
     final userMarker = Marker(
       point: _center,
       width: 80,
@@ -131,7 +128,7 @@ class _GymMapPageState extends State<GymMapPage> {
     });
   }
 
-  // The main build method structure remains the same
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,7 +157,7 @@ class _GymMapPageState extends State<GymMapPage> {
           ),
           Expanded(
             flex: 3,
-            // MODIFIED: This method now builds a FlutterMap
+           
             child: _buildMapWidget(),
           ),
           Expanded(
@@ -179,7 +176,7 @@ class _GymMapPageState extends State<GymMapPage> {
     );
   }
 
-  // MODIFIED: This entire method is replaced to use FlutterMap
+ 
   Widget _buildMapWidget() {
     return FlutterMap(
       mapController: _mapController,
@@ -188,12 +185,12 @@ class _GymMapPageState extends State<GymMapPage> {
         initialZoom: 13.0,
       ),
       children: [
-        // This is the base map layer from OpenStreetMap
+       
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.aryan.kevin_11', // Replace with your app's package name
+          userAgentPackageName: 'com.aryan.kevin_11', 
         ),
-        // This layer holds all the markers
+      
         MarkerLayer(
           markers: _markers,
         ),
@@ -202,7 +199,7 @@ class _GymMapPageState extends State<GymMapPage> {
             TextSourceAttribution(
               '© OpenStreetMap contributors',
               onTap: () {
-                // You can launch the OSM copyright page here if you want
+                
               },
             ),
           ],
@@ -212,20 +209,20 @@ class _GymMapPageState extends State<GymMapPage> {
     );
   }
 
-  // No changes needed for these widgets below
+ 
   Widget _buildErrorWidget() {
-    return Center(/* ... your existing error widget code ... */);
+    return Center();
   }
 
 
-    // Replace your _buildGymListItem with this
+    
   Widget _buildGymListItem(Map<String, dynamic> gym) {
     return InkWell(
       onTap: () {
-        // ✅ Recenters the map on the selected gym
+    
         _mapController.move(
           LatLng(gym['lat'], gym['lng']),
-          16.0, // zoom in a bit closer
+          16.0, 
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
